@@ -14,17 +14,26 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import {useRouter} from "next/navigation";
 import {AppRouterInstance} from "next/dist/shared/lib/app-router-context.shared-runtime";
+import {login} from "@/api/api";
 
 export default function SignIn() {
     const router : AppRouterInstance = useRouter();
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
+        login(data).then((res) => {
+            if(res.status == 200){
+                router.push('/');
+            }
+        }).catch((err) => {
+            console.log(err);
+        });
+
         console.log({
             email: data.get('email'),
             password: data.get('password'),
         });
-        router.push('/');
+
     };
 
 
