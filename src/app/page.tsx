@@ -1,17 +1,14 @@
-// app/page.js - no directives needed
+
 import Box from '@mui/material/Box';
-import Card from '@mui/material/Card';
 import Container from '@mui/material/Container';
-import Typography from '@mui/material/Typography';
+import Dashboard from "@/app/components/Dashboard";
 
 export default function Home() {
   return (
       <main>
         <Container>
           <Box>
-            <Card>
-              <Typography variant="h2">Hello World ~</Typography>
-            </Card>
+            <Dashboard/>
           </Box>
         </Container>
       </main>

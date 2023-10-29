@@ -12,8 +12,11 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
+import {useRouter} from "next/navigation";
+import {AppRouterInstance} from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 export default function SignIn() {
+    const router : AppRouterInstance = useRouter();
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
@@ -21,7 +24,10 @@ export default function SignIn() {
             email: data.get('email'),
             password: data.get('password'),
         });
+        router.push('/');
     };
+
+
 
     return (
             <Container component="main" maxWidth="xs">
