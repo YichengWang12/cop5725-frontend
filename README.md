@@ -4,7 +4,7 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 First, run the development server:
 
-Before you running the project, you need to install the dependencies:
+Before you run the project, you need to install the dependencies:
 
 
 
