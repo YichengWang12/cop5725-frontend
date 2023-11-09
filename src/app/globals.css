@@ -25,3 +25,8 @@ body {
     )
     rgb(var(--background-start-rgb));
 }
+
+.mui-1oqqzyl-MuiContainer-root{
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}

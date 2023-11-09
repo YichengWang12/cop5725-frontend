@@ -6,3 +6,7 @@ export function login(data:FormData) {
   console.log("api url",apiUrl);
   return axios.post(apiUrl + "/login/", data);
 }
+
+export function crimeQuery(data:FormData) {
+  return axios.post(apiUrl + "/crimeQuery/", data);
+}

@@ -23,6 +23,8 @@ export default function SignIn() {
         const data = new FormData(event.currentTarget);
         login(data).then((res) => {
             if(res.status == 200){
+                console.log(res)
+                localStorage.setItem('cop5725appToken',res.data.token)
                 router.push('/');
             }
         }).catch((err) => {

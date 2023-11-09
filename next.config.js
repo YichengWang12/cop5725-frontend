@@ -7,6 +7,16 @@ const nextConfig = {
             transform: "@mui/icons-material/{member}",
         },
     },
+    async rewrites() {
+        return [
+            {
+                source: '/',
+                destination: '/login',
+            },
+            // 其他的重写规则...
+        ];
+
+        },
 }
 
 module.exports = nextConfig
