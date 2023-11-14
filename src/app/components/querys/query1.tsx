@@ -13,26 +13,40 @@ export function Query1Chart(props: any) {
         labels: props.labels,
         datasets: [
             {
-                label: 'Covid-19 death rate compared to crime rate in LA',//图标名称：covid-19 death rate compared to crime rate in LA
-                data: props.data,
+                label: 'Covid-19 death rate in LA',//图标名称：covid-19 death rate compared to crime rate in LA
+                data: props.data.deathRate,
                 fill: false,
                 backgroundColor: 'rgb(255, 99, 132)',
                 borderColor: 'rgba(255, 99, 132, 0.2)',
-
+                yAxisID: 'y-axis-1',
             },
+            {
+                label: 'Crime rate in LA',
+                data: props.data.crimeRate,
+                fill: false,
+                backgroundColor: 'rgb(54, 162, 235)',
+                borderColor: 'rgba(54, 162, 235, 0.2)',
+                yAxisID: 'y-axis-2',
+            }
         ],
     };
 
-    // const options = {
-    //     scales: {
-    //         y: {
-    //             beginAtZero: true
-    //         }
-    //     }
-    // };
+    const options = {
+        scales: {
+            'y-axis-1': {
+                type: 'linear',
+                position: 'left',
+            },
+            'y-axis-2': {
+                type: 'linear',
+                position: 'right',
+            }
+        }
+    };
 
+    // @ts-ignore
     return (
-        <Line data={data}/>
+        <Line data={data} options={options}/>
     );
 }
 
@@ -45,6 +59,7 @@ export default function Query1(){
     const [endDay, setEndDay] = React.useState('31');
     const [dateTags, setDateTags] = React.useState<any[]>([]);
     const [deathRate, setDeathRate] = React.useState<any[]>([]);
+    const [crimeRate, setCrimeRate] = React.useState<any[]>([]);
 
     useEffect(() => {
         const changeYear = (month: string, year: string) => {
@@ -105,14 +120,21 @@ export default function Query1(){
             if(res.status == 200){
                 let dateTags = [];
                 let deathRate = [];
-                for(let item of res.data.rows){
+                let crimeRate = [];
+                for(let item of res.data.deathRateRows){
                     dateTags.push(item[0].split('T')[0]);
                     deathRate.push(parseFloat(item[1]));
                 }
+                for(let item of res.data.crimeRateRows){
+
+                    crimeRate.push(parseFloat(item[1]));
+                }
                 setDateTags(dateTags);
                 setDeathRate(deathRate);
+                setCrimeRate(crimeRate);
                 console.log(dateTags);
                 console.log(deathRate);
+                console.log(crimeRate);
             }
         }   ).catch((err) => {
             console.log(err);
@@ -278,7 +300,7 @@ export default function Query1(){
                 </Button>
             </Box>
             <div className="chart">
-                <Query1Chart labels={dateTags} data={deathRate}/>
+                <Query1Chart labels={dateTags} data={{deathRate:deathRate,crimeRate:crimeRate}}/>
             </div>
         </div>
 

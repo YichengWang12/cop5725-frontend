@@ -130,7 +130,7 @@ export default function Dashboard() {
                 </DrawerHeader>
                 <Divider />
                 <List>
-                    {['Query1', 'Query2', 'Query3', 'Query4'].map((text, index) => (
+                    {['Death Rate of COVID-19 and Crime Rate in LA', 'Query2', 'Query3', 'Query4'].map((text, index) => (
                         <ListItem key={text} disablePadding onClick={()=>setQueryType(index)}>
                             <ListItemButton>
                                 <ListItemIcon>

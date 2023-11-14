@@ -8,5 +8,5 @@ export function login(data:FormData) {
 }
 
 export function crimeQuery(data:FormData) {
-  return axios.post(apiUrl + "/crimeQuery/", data);
+  return axios.post(apiUrl + "/crimequery/", data);
 }
