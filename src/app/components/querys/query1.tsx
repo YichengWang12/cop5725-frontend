@@ -31,7 +31,7 @@ export function Query1Chart(props: any) {
         ],
     };
 
-    const options = {
+    const options:any = {
         scales: {
             'y-axis-1': {
                 type: 'linear',
