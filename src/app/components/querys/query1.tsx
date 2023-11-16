@@ -7,6 +7,7 @@ import Button from "@mui/material/Button";
 import {crimeQuery, login} from "@/api/api";
 import {Line} from "react-chartjs-2";
 import 'chart.js/auto'
+import {months, isLeapYear, checkDate} from "@/app/components/commonTools";
 
 export function Query1Chart(props: any) {
     const data = {
@@ -62,24 +63,14 @@ export default function Query1(){
     const [crimeRate, setCrimeRate] = React.useState<any[]>([]);
 
     useEffect(() => {
-        const changeYear = (month: string, year: string) => {
-            if (year != '2020' && month == '2' && startDay == '29') {
-                setStartDay('28');
-            }
-        };
-
-        changeYear(startMonth, startYear);
-    }, [startMonth, startYear]);
+        let day = checkDate(startYear,startMonth, startDay);
+        setStartDay(day);
+    }, [startMonth, startYear,startDay]);
 
     useEffect(() => {
-        const changeYear = (month: string, year: string) => {
-            if (year != '2020' && month == '2' && endDay == '29') {
-                setEndDay('28');
-            }
-        };
-
-        changeYear(startMonth, startYear);
-    }, [endMonth, endYear]);
+        let day = checkDate(endYear,endMonth, endDay);
+        setEndDay(day);
+    }, [endYear,endMonth, endYear]);
 
     function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
@@ -132,33 +123,14 @@ export default function Query1(){
                 setDateTags(dateTags);
                 setDeathRate(deathRate);
                 setCrimeRate(crimeRate);
-                console.log(dateTags);
-                console.log(deathRate);
-                console.log(crimeRate);
+
             }
         }   ).catch((err) => {
             console.log(err);
         });
 
     }
-    const months = [
-        { index: 1, label: 'January', days: 31 },
-        { index: 2, label: 'February', days: 28 },
-        { index: 3, label: 'March', days: 31 },
-        { index: 4, label: 'April', days: 30 },
-        { index: 5,label: 'May', days: 31 },
-        { index: 6,label: 'June', days: 30 },
-        { index: 7,label: 'July', days: 31 },
-        { index: 8,label: 'August', days: 31 },
-        { index: 9,label: 'September', days: 30 },
-        { index: 10,label: 'October', days: 31 },
-        { index: 11,label: 'November', days: 30 },
-        { index: 12,label: 'December', days: 31 },
-    ];
 
-    const isLeapYear = (year: number) => {
-        return ((year % 4 === 0) && (year % 100 !== 0)) || (year % 400 === 0);
-    };
     const getDaysArray = (monthIndex: string, yearIndex: string) => {
         let month = monthIndex == '' ? 1 : Number(monthIndex);
         const year = yearIndex == '' ? 2020 : Number(yearIndex);

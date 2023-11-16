@@ -24,6 +24,7 @@ import Query1 from "@/app/components/querys/query1";
 import Query2 from './querys/query2';
 import Query3 from "@/app/components/querys/query3";
 import Query4 from "@/app/components/querys/query4";
+import Query5 from "@/app/components/querys/query5";
 
 const drawerWidth = 240;
 
@@ -130,7 +131,7 @@ export default function Dashboard() {
                 </DrawerHeader>
                 <Divider />
                 <List>
-                    {['Death Rate of COVID-19 and Crime Rate in LA', 'Query2', 'Query3', 'Query4'].map((text, index) => (
+                    {['Death Rate of COVID-19 and Crime Rate in LA', 'Query2', 'Query3', 'Query4', 'Query5'].map((text, index) => (
                         <ListItem key={text} disablePadding onClick={()=>setQueryType(index)}>
                             <ListItemButton>
                                 <ListItemIcon>
@@ -163,6 +164,7 @@ export default function Dashboard() {
                 {queryType == 1 && <Query2/>}
                 {queryType == 2 && <Query3/>}
                 {queryType == 3 && <Query4/>}
+                {queryType == 4 && <Query5/>}
             </Main>
         </Box>
     );
