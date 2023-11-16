@@ -10,3 +10,7 @@ export function login(data:FormData) {
 export function crimeQuery(data:FormData) {
   return axios.post(apiUrl + "/crimequery/", data);
 }
+
+export function totalTuples(){
+  return axios.post(apiUrl + "/totaltuples/");
+}

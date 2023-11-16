@@ -25,6 +25,7 @@ import Query2 from './querys/query2';
 import Query3 from "@/app/components/querys/query3";
 import Query4 from "@/app/components/querys/query4";
 import Query5 from "@/app/components/querys/query5";
+import Extra from "@/app/components/extra/extra";
 
 const drawerWidth = 240;
 
@@ -145,7 +146,7 @@ export default function Dashboard() {
                 <Divider />
                 <List>
                     {['Settings','Log out'].map((text, index) => (
-                        <ListItem key={text} disablePadding>
+                        <ListItem key={text} disablePadding onClick={()=>setQueryType(9)}>
                             <ListItemButton>
                                 <ListItemIcon>
                                     {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
@@ -165,6 +166,7 @@ export default function Dashboard() {
                 {queryType == 2 && <Query3/>}
                 {queryType == 3 && <Query4/>}
                 {queryType == 4 && <Query5/>}
+                {queryType == 9 && <Extra/>}
             </Main>
         </Box>
     );
