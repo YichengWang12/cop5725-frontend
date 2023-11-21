@@ -14,3 +14,7 @@ export function crimeQuery(data:FormData) {
 export function totalTuples(){
   return axios.post(apiUrl + "/totaltuples/");
 }
+
+export function hospitalQuery(data:FormData) {
+  return axios.post(apiUrl + "/hospitalquery/", data);
+}

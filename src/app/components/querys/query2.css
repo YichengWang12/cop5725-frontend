@@ -1,0 +1,32 @@
+.startDate{
+    width:auto;
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+}
+
+.searchBar{
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-direction: row;
+    margin: 10px 10px;
+}
+
+.selectBar{
+    width: 150px;
+}
+
+.states-select{
+    width:600px;
+}
+.gap{
+    margin: 0 10px;
+}
+
+.form-component{
+    margin-right: -100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}

@@ -1,4 +1,3 @@
-
 import {FormControl, InputLabel, MenuItem, Select} from "@mui/material";
 import React, {useEffect} from "react";
 import "./query1.css"
@@ -9,7 +8,7 @@ import {Line} from "react-chartjs-2";
 import 'chart.js/auto'
 import {months, isLeapYear, checkDate} from "@/app/components/commonTools";
 
-export function Query1Chart(props: any) {
+export function QueryChart(props: any) {
     const data = {
         labels: props.labels,
         datasets: [
@@ -44,7 +43,7 @@ export function Query1Chart(props: any) {
             }
         }
     };
-
+    console.log(data)
     // @ts-ignore
     return (
         <Line data={data} options={options}/>
@@ -117,7 +116,6 @@ export default function Query1(){
                     deathRate.push(parseFloat(item[1]));
                 }
                 for(let item of res.data.crimeRateRows){
-
                     crimeRate.push(parseFloat(item[1]));
                 }
                 setDateTags(dateTags);
@@ -272,7 +270,7 @@ export default function Query1(){
                 </Button>
             </Box>
             <div className="chart">
-                <Query1Chart labels={dateTags} data={{deathRate:deathRate,crimeRate:crimeRate}}/>
+                <QueryChart labels={dateTags} data={{deathRate:deathRate,crimeRate:crimeRate}}/>
             </div>
         </div>
 
