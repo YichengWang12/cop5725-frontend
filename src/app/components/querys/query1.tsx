@@ -13,7 +13,7 @@ export function QueryChart(props: any) {
         labels: props.labels,
         datasets: [
             {
-                label: 'Covid-19 death rate in LA',//图标名称：covid-19 death rate compared to crime rate in LA
+                label: '7-days Covid-19 Rolling Mortality rate in LA',//图标名称：covid-19 death rate compared to crime rate in LA
                 data: props.data.deathRate,
                 fill: false,
                 backgroundColor: 'rgb(255, 99, 132)',
@@ -21,7 +21,7 @@ export function QueryChart(props: any) {
                 yAxisID: 'y-axis-1',
             },
             {
-                label: 'Crime rate in LA',
+                label: '7-days Rolling Crime rate in LA',
                 data: props.data.crimeRate,
                 fill: false,
                 backgroundColor: 'rgb(54, 162, 235)',
@@ -36,14 +36,33 @@ export function QueryChart(props: any) {
             'y-axis-1': {
                 type: 'linear',
                 position: 'left',
+                ticks: {
+                    callback: function(value:any, index:any, values:any) {
+                        return (value).toFixed(3) + '%';
+                    }
+                }
             },
             'y-axis-2': {
                 type: 'linear',
                 position: 'right',
+                ticks: {
+                    callback: function(value:any, index:any, values:any) {
+                        return (value).toFixed(3) + '%';
+                    }
+                }
+            }
+        },
+        plugins: {
+            tooltips: {
+                callbacks: {
+                    label: function(tooltipItem:any, data:any) {
+                        return tooltipItem.yLabel.toFixed(3) + '%';
+                    }
+                }
             }
         }
+
     };
-    console.log(data)
     // @ts-ignore
     return (
         <Line data={data} options={options}/>
@@ -111,12 +130,10 @@ export default function Query1(){
                 let dateTags = [];
                 let deathRate = [];
                 let crimeRate = [];
-                for(let item of res.data.deathRateRows){
+                for(let item of res.data.testRows){
                     dateTags.push(item[0].split('T')[0]);
                     deathRate.push(parseFloat(item[1]));
-                }
-                for(let item of res.data.crimeRateRows){
-                    crimeRate.push(parseFloat(item[1]));
+                    crimeRate.push(parseFloat(item[2]));
                 }
                 setDateTags(dateTags);
                 setDeathRate(deathRate);

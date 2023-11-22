@@ -132,7 +132,7 @@ export default function Dashboard() {
                 </DrawerHeader>
                 <Divider />
                 <List>
-                    {['Death Rate of COVID-19 and Crime Rate in LA', 'Query2', 'Query3', 'Query4', 'Query5'].map((text, index) => (
+                    {['L.A. Covid Rolling Mortality and Crime Rates', 'State Covid Mortality and Diagnosis rates', 'Query3', 'Query4', 'Query5'].map((text, index) => (
                         <ListItem key={text} disablePadding onClick={()=>setQueryType(index)}>
                             <ListItemButton>
                                 <ListItemIcon>

@@ -18,3 +18,7 @@ export function totalTuples(){
 export function hospitalQuery(data:FormData) {
   return axios.post(apiUrl + "/hospitalquery/", data);
 }
+
+export function lossWorkQuery(data:FormData) {
+  return axios.post(apiUrl + "/worklossquery/", data);
+}

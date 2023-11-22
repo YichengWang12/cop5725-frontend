@@ -200,9 +200,6 @@ export default function Query2(){
             setStartDay('28');
         }
     }
-
-
-
     const startDaysArray = getDaysArray(startMonth,startYear);
     const endDaysArray = getDaysArray(endMonth,endYear);
     return(
@@ -349,7 +346,7 @@ export default function Query2(){
                 </Button>
             </Box>
             <div className="chart">
-                <QueryChart key={key} labels={deathDateTags} data={{deathrate :deathRate,hospitalrate :hospitalRate}} />
+                <QueryChart key={key} labels={deathDateTags} data={{mortality_rate :deathRate,diagnosis_rate :hospitalRate}} />
             </div>
         </div>
 

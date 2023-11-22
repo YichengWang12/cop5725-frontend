@@ -4,20 +4,11 @@ import {stateColors,stateColorsRGBA} from "@/app/components/commonTools";
 import 'moment';
 import 'chartjs-adapter-moment';
 
-
-type datasetObj = {
-
-}
 export default function QueryChart(props: any) {
 
     //动态创建dataset
     const datasets:any[] = [];
     let counter = 0;
-    let deathDates:any[] = props.labels.labelx1;
-    let hospitalDates:any[] = props.labels.labelx2;
-    let i = 0;
-    let j = 0;
-
     const items = Object.entries(props.data).map(([key, value]) => {
         let stringTag = key;
         let data:any = value;
@@ -40,10 +31,6 @@ export default function QueryChart(props: any) {
         counter++;
     })
     console.log(datasets);
-    // for(let key in datasets){
-    //     datasets[key].sort((a:any,b:any)=> a.x-b.x);
-    // }
-
     const data = {
         labels: props.labels,
         datasets: datasets,
