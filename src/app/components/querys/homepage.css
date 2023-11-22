@@ -1,0 +1,16 @@
+.home-title{
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 600;
+    font-family: Broadway, Times, serif;
+    margin-top:35px;
+    padding: 0;
+}
+
+.home-text{
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-top:35px;
+    padding: 0;
+    text-align: center;
+}

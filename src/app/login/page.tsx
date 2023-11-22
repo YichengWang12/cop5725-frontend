@@ -44,7 +44,7 @@ export default function SignIn() {
             }
         }).catch((err) => {
             console.log(err);
-            setAlertMessage('Unknown error!');
+            setAlertMessage(err.response.data.error);
             setAlertVisible(true);
             setAlertType('error');
         });
@@ -60,6 +60,9 @@ export default function SignIn() {
 
     return (
         <div>
+            <div className="app-title">
+                <h1>US COVID-19 Data Visualization</h1>
+            </div>
             <Container component="main" maxWidth="xs">
                 <CssBaseline />
                 <Box
@@ -111,14 +114,14 @@ export default function SignIn() {
                         </Button>
                         <Grid container>
                             <Grid item xs>
-                                <Link href="#" variant="body2">
-                                    Forgot password?
-                                </Link>
+                                {/*<Link href="#" variant="body2">*/}
+                                {/*    Forgot password?*/}
+                                {/*</Link>*/}
                             </Grid>
                             <Grid item>
-                                <Link href="#" variant="body2">
-                                    {"Don't have an account? Sign Up"}
-                                </Link>
+                                {/*<Link href="#" variant="body2">*/}
+                                {/*    {"Don't have an account? Sign Up"}*/}
+                                {/*</Link>*/}
                             </Grid>
                         </Grid>
                     </Box>

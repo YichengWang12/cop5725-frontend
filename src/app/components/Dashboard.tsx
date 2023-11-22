@@ -89,6 +89,7 @@ export default function Dashboard() {
     const theme = useTheme();
     const [open, setOpen] = React.useState(false);
     const [queryType , setQueryType] = React.useState(-1);
+    const [dashboardTitle, setDashboardTitle] = React.useState('Dashboard');
     const router : AppRouterInstance = useRouter();
 
     const handleDrawerOpen = () => {
@@ -98,6 +99,11 @@ export default function Dashboard() {
     const handleDrawerClose = () => {
         setOpen(false);
     };
+
+    const handleQueryType = (text:string,index:number) => {
+        setQueryType(index);
+        setDashboardTitle(text);
+    }
 
     useEffect(() => {
         let token = localStorage.getItem('cop5725appToken');
@@ -122,7 +128,7 @@ export default function Dashboard() {
                         <MenuIcon />
                     </IconButton>
                     <Typography variant="h6" noWrap component="div">
-                        Query Dashboard
+                        {dashboardTitle}
                     </Typography>
                 </Toolbar>
             </AppBar>
@@ -146,8 +152,8 @@ export default function Dashboard() {
                 </DrawerHeader>
                 <Divider />
                 <List>
-                    {['L.A. Covid Rolling Mortality and Crime Rates', 'State Covid Mortality and Diagnosis rates', 'Query3', 'Query4', 'Query5'].map((text, index) => (
-                        <ListItem key={text} disablePadding onClick={()=>setQueryType(index)}>
+                    {['L.A. Covid Rolling Mortality and Crime Rates', 'State Covid Mortality and Diagnosis rates', 'Query3', 'Infection rates in Universities and Prisons', 'Query5'].map((text, index) => (
+                        <ListItem key={text} disablePadding onClick={()=>handleQueryType(text,index)}>
                             <ListItemButton>
                                 <ListItemIcon>
                                     {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
@@ -160,7 +166,7 @@ export default function Dashboard() {
                 <Divider />
                 <List>
                     {['Settings','Log out'].map((text, index) => (
-                        <ListItem key={text} disablePadding onClick={()=>setQueryType(index + 8)}>
+                        <ListItem key={text} disablePadding onClick={()=>handleQueryType(text,index+8)}>
                             <ListItemButton>
                                 <ListItemIcon>
                                     {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
