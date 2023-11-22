@@ -88,7 +88,7 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 export default function Dashboard() {
     const theme = useTheme();
     const [open, setOpen] = React.useState(false);
-    const [queryType , setQueryType] = React.useState(-1);
+    const [queryType , setQueryType] = React.useState(0);
     const [dashboardTitle, setDashboardTitle] = React.useState('Dashboard');
     const router : AppRouterInstance = useRouter();
 
@@ -152,7 +152,7 @@ export default function Dashboard() {
                 </DrawerHeader>
                 <Divider />
                 <List>
-                    {['L.A. Covid Rolling Mortality and Crime Rates', 'State Covid Mortality and Diagnosis rates', 'Query3', 'Infection rates in Universities and Prisons', 'Query5'].map((text, index) => (
+                    {['Home','L.A. Covid Rolling Mortality and Crime Rates', 'State Covid Mortality and Diagnosis rates', 'Query3', 'Infection rates in Universities and Prisons', 'Query5'].map((text, index) => (
                         <ListItem key={text} disablePadding onClick={()=>handleQueryType(text,index)}>
                             <ListItemButton>
                                 <ListItemIcon>
@@ -180,12 +180,12 @@ export default function Dashboard() {
 
             <Main open={open}>
                 <DrawerHeader />
-                {queryType == -1 && <Homepage/>}
-                {queryType == 0 && <Query1/>}
-                {queryType == 1 && <Query2/>}
-                {queryType == 2 && <Query3/>}
-                {queryType == 3 && <Query4/>}
-                {queryType == 4 && <Query5/>}
+                {queryType == 0 && <Homepage/>}
+                {queryType == 1 && <Query1/>}
+                {queryType == 2 && <Query2/>}
+                {queryType == 3 && <Query3/>}
+                {queryType == 4 && <Query4/>}
+                {queryType == 5 && <Query5/>}
                 {queryType == 8 && <Extra/>}
                 {queryType == 9 && <Logout/>}
             </Main>
