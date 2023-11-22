@@ -26,6 +26,11 @@ import Query3 from "@/app/components/querys/query3";
 import Query4 from "@/app/components/querys/query4";
 import Query5 from "@/app/components/querys/query5";
 import Extra from "@/app/components/extra/extra";
+import {useEffect} from "react";
+import {router} from "next/client";
+import {AppRouterInstance} from "next/dist/shared/lib/app-router-context.shared-runtime";
+import {useRouter} from "next/navigation";
+import Logout from "@/app/components/extra/logout";
 
 const drawerWidth = 240;
 
@@ -84,6 +89,7 @@ export default function Dashboard() {
     const theme = useTheme();
     const [open, setOpen] = React.useState(false);
     const [queryType , setQueryType] = React.useState(-1);
+    const router : AppRouterInstance = useRouter();
 
     const handleDrawerOpen = () => {
         setOpen(true);
@@ -92,6 +98,14 @@ export default function Dashboard() {
     const handleDrawerClose = () => {
         setOpen(false);
     };
+
+    useEffect(() => {
+        let token = localStorage.getItem('cop5725appToken');
+        console.log(token);
+        if(token == null){
+            router.push('/login');
+        }
+    }, []);
 
     return (
         <Box sx={{ display: 'flex' }}>
@@ -146,7 +160,7 @@ export default function Dashboard() {
                 <Divider />
                 <List>
                     {['Settings','Log out'].map((text, index) => (
-                        <ListItem key={text} disablePadding onClick={()=>setQueryType(9)}>
+                        <ListItem key={text} disablePadding onClick={()=>setQueryType(index + 8)}>
                             <ListItemButton>
                                 <ListItemIcon>
                                     {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
@@ -166,7 +180,8 @@ export default function Dashboard() {
                 {queryType == 2 && <Query3/>}
                 {queryType == 3 && <Query4/>}
                 {queryType == 4 && <Query5/>}
-                {queryType == 9 && <Extra/>}
+                {queryType == 8 && <Extra/>}
+                {queryType == 9 && <Logout/>}
             </Main>
         </Box>
     );

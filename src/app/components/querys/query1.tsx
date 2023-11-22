@@ -130,7 +130,7 @@ export default function Query1(){
                 let dateTags = [];
                 let deathRate = [];
                 let crimeRate = [];
-                for(let item of res.data.testRows){
+                for(let item of res.data.rollingRows){
                     dateTags.push(item[0].split('T')[0]);
                     deathRate.push(parseFloat(item[1]));
                     crimeRate.push(parseFloat(item[2]));

@@ -25,7 +25,6 @@ export default function QueryChart(props: any) {
                 xAxisID: 'x-axis-1',
                 borderDash: counter == 0 ? [] : [5, 5],
             };
-
             datasets.push(datasetObj);
         })
         counter++;

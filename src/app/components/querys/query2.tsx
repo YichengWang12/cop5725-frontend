@@ -23,7 +23,6 @@ export default function Query2(){
     const [hospitalRate, setHospitalRate] = React.useState<any>({});
     //控制渲染图表
     const [key, setKey] = React.useState(0);
-    //const [inputData, setInputData] = React.useState<any[]>([]);
 
     useEffect(() => {
         let day = checkDate(startYear,startMonth, startDay);
@@ -89,7 +88,6 @@ export default function Query2(){
                 let hospitalDateTags = new Set();
                 let deathRate:any = {};
                 let hospitalRate:any = {};
-                let flag = false;
                 for(let item of res.data.deathRateRows){
 
                         deathDateTags.add(item[0].split('T')[0]);
@@ -99,8 +97,6 @@ export default function Query2(){
                         deathRate[stateName] = [];
                     }
                     deathRate[stateName].push({x:item[0].split('T')[0],y:item[1]});
-                    console.log(deathDateTags);
-                    flag = true;
                 }
 
                 for(let item of res.data.hospitalRateRows){
@@ -112,7 +108,6 @@ export default function Query2(){
                         hospitalRate[stateName] = [];
                     }
                     hospitalRate[stateName].push({x:item[0].split('T')[0],y:item[1]});
-                    flag = true;
                 }
 
                 setDeathDateTags(Array.from(deathDateTags));

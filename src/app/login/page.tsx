@@ -15,8 +15,13 @@ import Container from '@mui/material/Container';
 import {useRouter} from "next/navigation";
 import {AppRouterInstance} from "next/dist/shared/lib/app-router-context.shared-runtime";
 import {login} from "@/api/api";
+import {Alert} from "@mui/material";
+import "./page.css"
 
 export default function SignIn() {
+    const [alertVisible, setAlertVisible] = React.useState(false);
+    const [alertMessage, setAlertMessage] = React.useState('');
+    const [alertType, setAlertType] = React.useState('');
     const router : AppRouterInstance = useRouter();
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -25,10 +30,23 @@ export default function SignIn() {
             if(res.status == 200){
                 console.log(res)
                 localStorage.setItem('cop5725appToken',res.data.token)
-                router.push('/');
+                setAlertMessage('Username/password is valid!');
+                setAlertVisible(true);
+                setAlertType('success');
+                setTimeout(() => {
+                    router.push('/');
+                    setAlertVisible(false);
+                },2000);
+            }else{
+                setAlertMessage('Username/password is not valid!');
+                setAlertVisible(true);
+                setAlertType('error');
             }
         }).catch((err) => {
             console.log(err);
+            setAlertMessage('Unknown error!');
+            setAlertVisible(true);
+            setAlertType('error');
         });
 
         console.log({
@@ -41,6 +59,7 @@ export default function SignIn() {
 
 
     return (
+        <div>
             <Container component="main" maxWidth="xs">
                 <CssBaseline />
                 <Box
@@ -105,5 +124,9 @@ export default function SignIn() {
                     </Box>
                 </Box>
             </Container>
+            {(alertVisible && alertType=='success') && <Alert className="float-bar" severity={alertType}>{alertMessage}</Alert>}
+            {(alertVisible && alertType=='error') && <Alert className="float-bar" severity={alertType}>{alertMessage}</Alert>}
+        </div>
+
     );
 }

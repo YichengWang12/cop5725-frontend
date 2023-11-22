@@ -22,3 +22,7 @@ export function hospitalQuery(data:FormData) {
 export function lossWorkQuery(data:FormData) {
   return axios.post(apiUrl + "/worklossquery/", data);
 }
+
+export function prisonCollegeQuery(data:FormData) {
+  return axios.post(apiUrl + "/prisoncollegequery/", data);
+}
