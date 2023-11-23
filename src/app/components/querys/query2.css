@@ -30,3 +30,12 @@
     flex-direction: column;
     justify-content: center;
 }
+
+.float-bar {
+    position: fixed;
+    top: 8%;
+    width: 400px;
+    height: 45px;
+    left: 42%;
+    z-index: 999;
+}

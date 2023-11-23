@@ -1,18 +1,32 @@
-import React, {useEffect} from "react";
-import {checkDate, isLeapYear, months} from "@/app/components/commonTools";
-import Typography from "@mui/material/Typography";
-import Box from "@mui/material/Box";
-import {FormControl, InputLabel, MenuItem, Select} from "@mui/material";
+import {Alert, Chip, FormControl, InputLabel, MenuItem, OutlinedInput, Select} from "@mui/material";
 import Button from "@mui/material/Button";
+import Box from "@mui/material/Box";
+import React, {useEffect} from "react";
+import {checkDate, isLeapYear, months,  statesInUS} from "@/app/components/commonTools";
+import "./query2.css"
+import {vaccDiagQuery} from "@/api/api";
+import Querychart2y from "@/app/components/querys/querychart2y";
+
 
 export default function Query5(){
     const [startYear, setStartYear] = React.useState('2020');
-    const [startMonth, setStartMonth] = React.useState('1');
+    const [startMonth, setStartMonth] = React.useState('8');
     const [startDay, setStartDay] = React.useState('1');
-    const [endYear, setEndYear] = React.useState('2022');
+    const [endYear, setEndYear] = React.useState('2020');
     const [endMonth, setEndMonth] = React.useState('12');
     const [endDay, setEndDay] = React.useState('31');
-    const [dateTags, setDateTags] = React.useState<any[]>([]);
+
+    const [diagDateTags, setDiagDateTags] = React.useState<any[]>([]);
+    const [diagCount, setDiagCount] = React.useState<any[]>([]);
+    const [vaccCount, setVaccCount] = React.useState<any[]>([]);
+
+    const [states, setStates] = React.useState<any[]>([]);
+    //控制渲染图表
+    const [key, setKey] = React.useState(0);
+    const [alertVisible, setAlertVisible] = React.useState(false);
+    const [alertMessage, setAlertMessage] = React.useState('');
+    const [alertType, setAlertType] = React.useState('');
+
 
     useEffect(() => {
         let day = checkDate(startYear,startMonth, startDay);
@@ -24,8 +38,21 @@ export default function Query5(){
         setEndDay(day);
     }, [endYear,endMonth, endYear]);
 
+    const handleStateChange = (event:any) => {
+        const {
+            target: { value },
+        } = event;
+        setStates(
+            // 使用Array.isArray检查value是否是一个数组
+            typeof value === 'string' ? value.split(',') : value,
+        );
+    };
+
     function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
+        setAlertType('success');
+        setAlertMessage('Searching...');
+        setAlertVisible(true);
         const data = new FormData(event.currentTarget);
 
         let startYear = Number(data.get('startYear'));
@@ -52,12 +79,51 @@ export default function Query5(){
 
         // 将数据打包为FormData对象
         const param = new FormData();
+
         param.append('startDate', startDate.toISOString().split('T')[0]);
         param.append('endDate', endDate.toISOString().split('T')[0]);
+        param.append('states', states.join(','));
         console.log({
             startDate: param.get('startDate'),
             endDate: param.get('endDate'),
+            states: states,
         });
+
+        vaccDiagQuery(param).then((res)=>{
+            if(res.status == 200){
+                setAlertVisible(false);
+                // console.log(res.data);
+                let diagDateTags = new Set();
+                let diagCount:any = {};
+                let vaccCount:any = {};
+                for(let item of res.data.vaccdiagRows){
+                    let time = item[0].split('T')[0];
+                    diagDateTags.add(time);
+
+                    let state = item[2];
+                    if (diagCount[state] == undefined) {
+                        diagCount[state] = [];
+                    }
+                    if (vaccCount[state] == undefined) {
+                        vaccCount[state] = [];
+                    }
+                    let diag = item[1];
+                    let vacc = item[3];
+                    diagCount[state].push({x:time,y:diag});
+                    vaccCount[state].push({x:time,y:vacc});
+
+                }
+                setDiagDateTags(Array.from(diagDateTags));
+                setDiagCount(diagCount);
+                setVaccCount(vaccCount);
+                setKey(key+1);
+            }
+        }).catch((err)=>{
+            console.log(err);
+            setAlertType('error');
+            setAlertMessage('Error');
+            setAlertVisible(true);
+        })
 
 
 
@@ -87,113 +153,143 @@ export default function Query5(){
             setStartDay('28');
         }
     }
-
     const startDaysArray = getDaysArray(startMonth,startYear);
     const endDaysArray = getDaysArray(endMonth,endYear);
     return(
-        <Typography>
-            <Box component="form" className="searchBar" noValidate onSubmit={handleSubmit}>
-                <div className="startDate">
-                    <FormControl className="selectBar">
-                        <InputLabel id="demo-simple-select-label">Start Year</InputLabel>
+        <div>
+            <Box component="form" className="form-component" noValidate onSubmit={handleSubmit}>
+                <div className="searchBar ">
+                    <FormControl className="states-select ">
+                        <InputLabel id="demo-multiple-chip-label">States</InputLabel>
                         <Select
-                            labelId="demo-simple-select-label"
-                            id="demo-simple-select"
-                            value={startYear}
-                            label="Start Year"
-                            onChange={(event) => {setStartYear(event.target.value as string)}}
-                            name="startYear"
-                        >
-                            <MenuItem value={2020}>2020</MenuItem>
-                            <MenuItem value={2021}>2021</MenuItem>
-                            <MenuItem value={2022}>2022</MenuItem>
-                        </Select>
+                            labelId="demo-multiple-chip-label"
+                            id="demo-multiple-chip"
+                            multiple
+                            value={states}
+                            onChange={handleStateChange}
+                            name="states"
+                            input={<OutlinedInput id="select-multiple-chip" label="States" />}
+                            renderValue={(selected) => (
+                                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                                    {selected.map((value) => (
+                                        <Chip key={value} label={value} />
+                                    ))}
+                                </Box>
+                            )}
 
-                    </FormControl>
-                    <FormControl className="selectBar">
-                        <InputLabel id="demo-simple-select-label">Start Month</InputLabel>
-                        <Select
-                            labelId="demo-simple-select-label"
-                            id="demo-simple-select"
-                            value={startMonth}
-                            label="Start Month"
-                            onChange={(event) => {setStartMonth(event.target.value as string)}}
-                            name="startMonth"
                         >
-                            {months.map((month) => (
-                                    <MenuItem key={month.index} value={month.index}>{month.label}</MenuItem>
-                                )
-                            )}
-                        </Select>
-                    </FormControl>
-                    <FormControl className="selectBar">
-                        <InputLabel id="demo-simple-select-label">Start Day</InputLabel>
-                        <Select
-                            labelId="demo-simple-select-label"
-                            id="demo-simple-select"
-                            value={startDay}
-                            label="Start Day"
-                            onChange={(event) => {setStartDay(event.target.value as string)}}
-                            name="startDay"
-                        >
-                            {startDaysArray.map((day) => (
-                                    <MenuItem key={day} value={day}>{day}</MenuItem>
-                                )
-                            )}
+                            {statesInUS.map((state) => (
+                                <MenuItem key={state.code} value={state.code}>
+                                    {state.name}
+                                </MenuItem>
+                            ))}
                         </Select>
                     </FormControl>
                 </div>
-                <div className="gap"> - </div>
                 <div className="searchBar">
-                    <FormControl className="selectBar">
-                        <InputLabel id="demo-simple-select-label">End Year</InputLabel>
-                        <Select
-                            labelId="demo-simple-select-label"
-                            id="demo-simple-select"
-                            value={endYear}
-                            label="End Year"
-                            onChange={(event) => {setEndYear(event.target.value as string)}}
-                            name="endYear"
-                        >
-                            <MenuItem value={2020}>2020</MenuItem>
-                            <MenuItem value={2021}>2021</MenuItem>
-                            <MenuItem value={2022}>2022</MenuItem>
-                        </Select>
+                    <div className="startDate">
+                        <FormControl className="selectBar">
+                            <InputLabel id="demo-simple-select-label">Start Year</InputLabel>
+                            <Select
+                                labelId="demo-simple-select-label"
+                                id="demo-simple-select"
+                                value={startYear}
+                                label="Start Year"
+                                onChange={(event) => {setStartYear(event.target.value as string)}}
+                                name="startYear"
+                            >
+                                <MenuItem value={2020}>2020</MenuItem>
+                                <MenuItem value={2021}>2021</MenuItem>
+                                <MenuItem value={2022}>2022</MenuItem>
+                            </Select>
 
-                    </FormControl>
-                    <FormControl className="selectBar">
-                        <InputLabel id="demo-simple-select-label">End Month</InputLabel>
-                        <Select
-                            labelId="demo-simple-select-label"
-                            id="demo-simple-select"
-                            value={endMonth}
-                            label="End Month"
-                            onChange={(event) => {setEndMonth(event.target.value as string)}}
-                            name="endMonth"
-                        >
-                            {months.map((month) => (
-                                    <MenuItem key={month.index} value={month.index}>{month.label}</MenuItem>
-                                )
-                            )}
-                        </Select>
-                    </FormControl>
-                    <FormControl className="selectBar">
-                        <InputLabel id="demo-simple-select-label">End Day</InputLabel>
-                        <Select
-                            labelId="demo-simple-select-label"
-                            id="demo-simple-select"
-                            value={endDay}
-                            label="End Day"
-                            onChange={(event) => {setEndDay(event.target.value as string)}}
-                            name="endDay"
-                        >
-                            {endDaysArray.map((day) => (
-                                    <MenuItem key={day} value={day}>{day}</MenuItem>
-                                )
-                            )}
-                        </Select>
-                    </FormControl>
+                        </FormControl>
+                        <FormControl className="selectBar">
+                            <InputLabel id="demo-simple-select-label">Start Month</InputLabel>
+                            <Select
+                                labelId="demo-simple-select-label"
+                                id="demo-simple-select"
+                                value={startMonth}
+                                label="Start Month"
+                                onChange={(event) => {setStartMonth(event.target.value as string)}}
+                                name="startMonth"
+                            >
+                                {months.map((month) => (
+                                        <MenuItem key={month.index} value={month.index}>{month.label}</MenuItem>
+                                    )
+                                )}
+                            </Select>
+                        </FormControl>
+                        <FormControl className="selectBar">
+                            <InputLabel id="demo-simple-select-label">Start Day</InputLabel>
+                            <Select
+                                labelId="demo-simple-select-label"
+                                id="demo-simple-select"
+                                value={startDay}
+                                label="Start Day"
+                                onChange={(event) => {setStartDay(event.target.value as string)}}
+                                name="startDay"
+                            >
+                                {startDaysArray.map((day) => (
+                                        <MenuItem key={day} value={day}>{day}</MenuItem>
+                                    )
+                                )}
+                            </Select>
+                        </FormControl>
+                    </div>
+                    <div className="gap"> - </div>
+                    <div className="endDate">
+                        <FormControl className="selectBar">
+                            <InputLabel id="demo-simple-select-label">End Year</InputLabel>
+                            <Select
+                                labelId="demo-simple-select-label"
+                                id="demo-simple-select"
+                                value={endYear}
+                                label="End Year"
+                                onChange={(event) => {setEndYear(event.target.value as string)}}
+                                name="endYear"
+                            >
+                                <MenuItem value={2020}>2020</MenuItem>
+                                <MenuItem value={2021}>2021</MenuItem>
+                                <MenuItem value={2022}>2022</MenuItem>
+                            </Select>
+
+                        </FormControl>
+                        <FormControl className="selectBar">
+                            <InputLabel id="demo-simple-select-label">End Month</InputLabel>
+                            <Select
+                                labelId="demo-simple-select-label"
+                                id="demo-simple-select"
+                                value={endMonth}
+                                label="End Month"
+                                onChange={(event) => {setEndMonth(event.target.value as string)}}
+                                name="endMonth"
+                            >
+                                {months.map((month) => (
+                                        <MenuItem key={month.index} value={month.index}>{month.label}</MenuItem>
+                                    )
+                                )}
+                            </Select>
+                        </FormControl>
+                        <FormControl className="selectBar">
+                            <InputLabel id="demo-simple-select-label">End Day</InputLabel>
+                            <Select
+                                labelId="demo-simple-select-label"
+                                id="demo-simple-select"
+                                value={endDay}
+                                label="End Day"
+                                onChange={(event) => {setEndDay(event.target.value as string)}}
+                                name="endDay"
+                            >
+                                {endDaysArray.map((day) => (
+                                        <MenuItem key={day} value={day}>{day}</MenuItem>
+                                    )
+                                )}
+                            </Select>
+                        </FormControl>
+                    </div>
                 </div>
+
                 <Button
                     type="submit"
                     fullWidth
@@ -202,6 +298,15 @@ export default function Query5(){
                     Search
                 </Button>
             </Box>
-        </Typography>
+            <div className="chart">
+                <Querychart2y key={key} labels={diagDateTags}
+                              data={{diagCount:diagCount,vaccCount:vaccCount}} />
+            </div>
+            {(alertVisible && alertType=='success') && <Alert className="float-bar" severity={alertType}>{alertMessage}</Alert>}
+            {(alertVisible && alertType=='error') && <Alert className="float-bar" severity={alertType}>{alertMessage}</Alert>}
+        </div>
+
+
+
     )
 }

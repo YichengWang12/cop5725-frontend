@@ -4,7 +4,7 @@ import {stateColors,stateColorsRGBA} from "@/app/components/commonTools";
 import 'moment';
 import 'chartjs-adapter-moment';
 
-export default function QueryChart(props: any) {
+export default function Querychart3y(props: any) {
 
     //动态创建dataset
     const datasets:any[] = [];
@@ -12,6 +12,44 @@ export default function QueryChart(props: any) {
     const items = Object.entries(props.data).map(([key, value]) => {
         let stringTag = key;
         let data:any = value;
+        let axisID = () => {
+            if(counter == 0){
+                return 'y-axis-1';
+            }else if (counter == 1){
+                return 'y-axis-2';
+            }else{
+                return 'y-axis-3';
+            }
+        }
+        let lineType = () => {
+            if(counter == 0){
+                return [];
+            }else if (counter == 1){
+                return [5, 5];
+            }else{
+                return [1,8];
+            }
+        }
+
+        let pointType = () => {
+            if(counter == 0){
+                return 'circle';
+            }else if (counter == 1){
+                return 'triangle';
+            }else{
+                return 'rect';
+            }
+        }
+
+        let lineWidth = () => {
+            if(counter == 0){
+                return 2;
+            }else if (counter == 1){
+                return 3;
+            }else{
+                return 4;
+            }
+        }
 
         const datasetraw = Object.entries(data).map(([key,value]) =>{
             let datasetObj = {
@@ -21,9 +59,11 @@ export default function QueryChart(props: any) {
                 fill: false,
                 backgroundColor: stateColors[key],
                 borderColor: stateColorsRGBA[key],
-                yAxisID: counter == 0 ? 'y-axis-1' : 'y-axis-2',
+                yAxisID: axisID(),
                 xAxisID: 'x-axis-1',
-                borderDash: counter == 0 ? [] : [5, 5],
+                borderDash: lineType(),
+                pointStyle: pointType(),
+                borderWidth: lineWidth(),
             };
             datasets.push(datasetObj);
         })
@@ -42,6 +82,10 @@ export default function QueryChart(props: any) {
                 position: 'left',
             },
             'y-axis-2': {
+                type: 'linear',
+                position: 'right',
+            },
+            'y-axis-3': {
                 type: 'linear',
                 position: 'right',
             },

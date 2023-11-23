@@ -1,11 +1,11 @@
-import {Chip, FormControl, InputLabel, MenuItem, OutlinedInput, Select} from "@mui/material";
+import {Alert, Chip, FormControl, InputLabel, MenuItem, OutlinedInput, Select} from "@mui/material";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import React, {useEffect} from "react";
 import {checkDate, isLeapYear, months, stateColors, stateColorsRGBA, statesInUS} from "@/app/components/commonTools";
 import "./query2.css"
 import {prisonCollegeQuery} from "@/api/api";
-import QueryChart from "@/app/components/querys/querychart";
+import Querychart2y from "@/app/components/querys/querychart2y";
 
 
 export default function Query4(){
@@ -15,15 +15,15 @@ export default function Query4(){
     const [endYear, setEndYear] = React.useState('2020');
     const [endMonth, setEndMonth] = React.useState('12');
     const [endDay, setEndDay] = React.useState('31');
-    const [deathDateTags, setDeathDateTags] = React.useState<any[]>([]);
-    const [hospitalDateTags, setHospitalDeathDateTags] = React.useState<any[]>([]);
     const [collegeDateTags, setCollegeDateTags] = React.useState<any[]>([]);
-    const [prisonDateTags, setPrisonDateTags] = React.useState<any[]>([]);
     const [collegeDiagnosticRate, setCollegeDiagnosticRate] = React.useState<any[]>([]);
     const [prisonDiagnosticRate, setPrisonDiagnosticRate] = React.useState<any[]>([]);
     const [states, setStates] = React.useState<any[]>([]);
     //控制渲染图表
     const [key, setKey] = React.useState(0);
+    const [alertVisible, setAlertVisible] = React.useState(false);
+    const [alertMessage, setAlertMessage] = React.useState('');
+    const [alertType, setAlertType] = React.useState('');
 
 
     useEffect(() => {
@@ -48,6 +48,9 @@ export default function Query4(){
 
     function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
+        setAlertType('success');
+        setAlertMessage('Searching...');
+        setAlertVisible(true);
         const data = new FormData(event.currentTarget);
 
         let startYear = Number(data.get('startYear'));
@@ -86,6 +89,7 @@ export default function Query4(){
 
         prisonCollegeQuery(param).then((res)=>{
             if(res.status == 200){
+                setAlertVisible(false);
                 console.log(res.data);
                 let collegeDateTags = new Set();
                 let collegeData:any = {};
@@ -126,6 +130,9 @@ export default function Query4(){
                 setKey(key+1);
             }
         }).catch((err)=>{
+            setAlertType('error');
+            setAlertMessage('Error ');
+            setAlertVisible(true);
             console.log(err);
         })
 
@@ -303,10 +310,12 @@ export default function Query4(){
                 </Button>
             </Box>
             <div className="chart">
-                <QueryChart key={key} labels={collegeDateTags}
-                            data={{'collegeDiagnosticRate':collegeDiagnosticRate,
+                <Querychart2y key={key} labels={collegeDateTags}
+                              data={{'collegeDiagnosticRate':collegeDiagnosticRate,
                                 'prisonDiagnosticRate':prisonDiagnosticRate}} />
             </div>
+            {(alertVisible && alertType=='success') && <Alert className="float-bar" severity={alertType}>{alertMessage}</Alert>}
+            {(alertVisible && alertType=='error') && <Alert className="float-bar" severity={alertType}>{alertMessage}</Alert>}
         </div>
 
 

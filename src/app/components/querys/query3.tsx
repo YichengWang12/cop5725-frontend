@@ -1,11 +1,11 @@
-import {Chip, FormControl, InputLabel, MenuItem, OutlinedInput, Select} from "@mui/material";
+import {Alert, Chip, FormControl, InputLabel, MenuItem, OutlinedInput, Select} from "@mui/material";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import React, {useEffect} from "react";
 import {checkDate, isLeapYear, months, stateColors, stateColorsRGBA, statesInUS} from "@/app/components/commonTools";
 import "./query3.css"
 import {lossWorkQuery} from "@/api/api";
-import QueryChart from "@/app/components/querys/querychart";
+import Querychart3y from "@/app/components/querys/querychart3y";
 
 
 export default function Query3(){
@@ -16,14 +16,16 @@ export default function Query3(){
     const [endMonth, setEndMonth] = React.useState('12');
     const [endDay, setEndDay] = React.useState('31');
     const [deathDateTags, setDeathDateTags] = React.useState<any[]>([]);
-    const [hospitalDateTags, setHospitalDeathDateTags] = React.useState<any[]>([]);
     const [states, setStates] = React.useState<any[]>([]);
     //返回数据的对象数组 {'state':[]}
     const [deathRate, setDeathRate] = React.useState<any>({});
-    const [hospitalRate, setHospitalRate] = React.useState<any>({});
+    const [lossOfWorkRate, setLossOfWorkRate] = React.useState<any>({});
+    const [laborForceRate, setLaborForceRate] = React.useState<any>({});
+    const [alertVisible, setAlertVisible] = React.useState(false);
+    const [alertMessage, setAlertMessage] = React.useState('');
+    const [alertType, setAlertType] = React.useState('');
     //控制渲染图表
     const [key, setKey] = React.useState(0);
-    //const [inputData, setInputData] = React.useState<any[]>([]);
 
     useEffect(() => {
         let day = checkDate(startYear,startMonth, startDay);
@@ -47,6 +49,20 @@ export default function Query3(){
 
     function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
+        if (states.length === 0) {
+            setAlertType('error');
+            setAlertMessage('Please select at least one state.');
+            setAlertVisible(true);
+            return;
+        }
+        if(states.length > 0 && alertVisible){
+            setAlertVisible(false);
+        }
+        if(states.length > 0){
+            setAlertType('success');
+            setAlertMessage('Searching');
+            setAlertVisible(true);
+        }
         const data = new FormData(event.currentTarget);
 
         let startYear = Number(data.get('startYear'));
@@ -77,59 +93,109 @@ export default function Query3(){
         param.append('startDate', startDate.toISOString().split('T')[0]);
         param.append('endDate', endDate.toISOString().split('T')[0]);
         param.append('states', states.join(','));
+        console.log({
+            startDate: param.get('startDate'),
+            endDate: param.get('endDate'),
+            states: states,
+        });
 
         lossWorkQuery(param).then((res)=>{
             if(res.status == 200){
-                console.log(res.data);
+                setAlertVisible(false);
+                let deathDateTags = new Set();
+                let deathRate:any = {};
+                let lossWorkRate:any = {};
+                let laborForceRate:any = {};
+                for(let item of res.data.deathRateRows){
+
+                    deathDateTags.add(item[0].split('T')[0]);
+
+                    let stateName = item[2];
+                    if(deathRate[stateName] == undefined){
+                        deathRate[stateName] = [];
+                    }
+                    deathRate[stateName].push({x:item[0].split('T')[0],y:item[1]});
+                }
+
+                for(let item of res.data.lossOfWorkRows){
+
+
+                    let stateName = item[2];
+                    if(lossWorkRate[stateName] == undefined){
+                        lossWorkRate[stateName] = [];
+                    }
+                    lossWorkRate[stateName].push({x:item[0].split('T')[0],y:item[1]});
+                }
+
+                for(let item of res.data.laborPopulationRows){
+                    let stateName = item[2];
+                    if(laborForceRate[stateName] == undefined){
+                        laborForceRate[stateName] = [];
+                    }
+                    laborForceRate[stateName].push({x:item[0].split('T')[0],y:item[1]});
+                }
+                setDeathDateTags(Array.from(deathDateTags));
+                setDeathRate(deathRate);
+                setLossOfWorkRate(lossWorkRate);
+                setLaborForceRate(laborForceRate);
+                setKey(key+1);
             }
         }).catch((err)=>{
-            console.log(err)
+            console.log(err);
+            setAlertType('error');
+            setAlertMessage('Error');
+            setAlertVisible(true);
         })
 
-        // hospitalQuery(param).then((res)=>{
-        //     if(res.status == 200){
-        //         let deathDateTags = new Set();
-        //         let hospitalDateTags = new Set();
-        //         let deathRate:any = {};
-        //         let hospitalRate:any = {};
-        //         let flag = false;
-        //         for(let item of res.data.deathRateRows){
-        //
-        //             deathDateTags.add(item[0].split('T')[0]);
-        //
-        //             let stateName = item[2];
-        //             if(deathRate[stateName] == undefined){
-        //                 deathRate[stateName] = [];
-        //             }
-        //             deathRate[stateName].push({x:item[0].split('T')[0],y:item[1]});
-        //             console.log(deathDateTags);
-        //             flag = true;
-        //         }
-        //
-        //         for(let item of res.data.hospitalRateRows){
-        //
-        //             hospitalDateTags.add(item[0].split('T')[0]);
-        //
-        //             let stateName = item[2];
-        //             if(hospitalRate[stateName] == undefined){
-        //                 hospitalRate[stateName] = [];
-        //             }
-        //             hospitalRate[stateName].push({x:item[0].split('T')[0],y:item[1]});
-        //             flag = true;
-        //         }
-        //
-        //         setDeathDateTags(Array.from(deathDateTags));
-        //         setHospitalDeathDateTags(Array.from(hospitalDateTags));
-        //         setDeathRate(deathRate);
-        //         setHospitalRate(hospitalRate);
-        //         setKey(key+1);
-        //     }
-        // }).catch((err)=>{
-        //     console.log(err);
-        // })
 
 
+    }
 
+    function generateChartDataSet(datainput:any){
+        //动态创建dataset
+        const datasets:any[] = [];
+        let counter = 0;
+
+        const items = Object.entries(datainput).map(([key, value]) => {
+            let stringTag = key;
+            let data:any = value;
+
+            console.log(stringTag);
+            console.log(data);
+            const datasetraw = Object.entries(data).map(([key,value]) =>{
+                let datasetObj = {
+                    label: stringTag + ' in ' + key,
+                    data: value,
+                    fill: false,
+                    backgroundColor: stateColors[key],
+                    borderColor: stateColorsRGBA[key],
+                    yAxisID: counter == 0 ? 'y-axis-1' : 'y-axis-2',
+                    borderDash: counter == 0 ? [] : [5, 5],
+                };
+                datasets.push(datasetObj);
+            })
+            counter++;
+        })
+
+
+        const data = {
+            labels: datainput.labels,
+            datasets: datasets,
+        };
+
+        const options:any = {
+            scales: {
+                'y-axis-1': {
+                    type: 'linear',
+                    position: 'left',
+                },
+                'y-axis-2': {
+                    type: 'linear',
+                    position: 'right',
+                }
+            }
+        };
+        return [data,options];
     }
 
     const getDaysArray = (monthIndex: string, yearIndex: string) => {
@@ -149,6 +215,13 @@ export default function Query3(){
 
     }
 
+    const changeYear = (month: string, year: string,flag: number) => {
+
+        // 如果年份不是闰年，但是月份是2月并且日期是29号，那么日期应该是28号，在每次选择年份的时候调用
+        if(year != '2020' && month === '2' && startDay === '29'){
+            setStartDay('28');
+        }
+    }
     const startDaysArray = getDaysArray(startMonth,startYear);
     const endDaysArray = getDaysArray(endMonth,endYear);
     return(
@@ -295,8 +368,10 @@ export default function Query3(){
                 </Button>
             </Box>
             <div className="chart">
-                <QueryChart key={key} labels={deathDateTags} data={{deathrate :deathRate,hospitalrate :hospitalRate}} />
+                <Querychart3y key={key} labels={deathDateTags} data={{deathRate:deathRate,lossOfWorkRate:lossOfWorkRate,laborForceRate:laborForceRate}} />
             </div>
+            {(alertVisible && alertType=='success') && <Alert className="float-bar" severity={alertType}>{alertMessage}</Alert>}
+            {(alertVisible && alertType=='error') && <Alert className="float-bar" severity={alertType}>{alertMessage}</Alert>}
         </div>
 
 

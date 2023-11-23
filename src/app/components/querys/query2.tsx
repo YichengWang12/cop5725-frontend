@@ -1,11 +1,11 @@
-import {Chip, FormControl, InputLabel, MenuItem, OutlinedInput, Select} from "@mui/material";
+import {Alert, Chip, FormControl, InputLabel, MenuItem, OutlinedInput, Select} from "@mui/material";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import React, {useEffect} from "react";
 import {checkDate, isLeapYear, months, stateColors, stateColorsRGBA, statesInUS} from "@/app/components/commonTools";
 import "./query2.css"
 import {hospitalQuery} from "@/api/api";
-import QueryChart from "@/app/components/querys/querychart";
+import Querychart2y from "@/app/components/querys/querychart2y";
 
 
 export default function Query2(){
@@ -21,6 +21,9 @@ export default function Query2(){
     //返回数据的对象数组 {'state':[]}
     const [deathRate, setDeathRate] = React.useState<any>({});
     const [hospitalRate, setHospitalRate] = React.useState<any>({});
+    const [alertVisible, setAlertVisible] = React.useState(false);
+    const [alertMessage, setAlertMessage] = React.useState('');
+    const [alertType, setAlertType] = React.useState('');
     //控制渲染图表
     const [key, setKey] = React.useState(0);
 
@@ -46,6 +49,20 @@ export default function Query2(){
 
     function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
+        if (states.length === 0) {
+            setAlertType('error');
+            setAlertMessage('Please select at least one state.');
+            setAlertVisible(true);
+            return;
+        }
+        if(states.length > 0 && alertVisible){
+            setAlertVisible(false);
+        }
+        if(states.length > 0){
+            setAlertType('success');
+            setAlertMessage('Searching');
+            setAlertVisible(true);
+        }
         const data = new FormData(event.currentTarget);
 
         let startYear = Number(data.get('startYear'));
@@ -84,6 +101,7 @@ export default function Query2(){
 
         hospitalQuery(param).then((res)=>{
             if(res.status == 200){
+                setAlertVisible(false);
                 let deathDateTags = new Set();
                 let hospitalDateTags = new Set();
                 let deathRate:any = {};
@@ -117,6 +135,9 @@ export default function Query2(){
                 setKey(key+1);
             }
         }).catch((err)=>{
+            setAlertType('error');
+            setAlertMessage('Error');
+            setAlertVisible(true);
             console.log(err);
         })
 
@@ -341,8 +362,10 @@ export default function Query2(){
                 </Button>
             </Box>
             <div className="chart">
-                <QueryChart key={key} labels={deathDateTags} data={{mortality_rate :deathRate,diagnosis_rate :hospitalRate}} />
+                <Querychart2y key={key} labels={deathDateTags} data={{mortality_rate :deathRate,diagnosis_rate :hospitalRate}} />
             </div>
+            {(alertVisible && alertType=='success') && <Alert className="float-bar" severity={alertType}>{alertMessage}</Alert>}
+            {(alertVisible && alertType=='error') && <Alert className="float-bar" severity={alertType}>{alertMessage}</Alert>}
         </div>
 
 

@@ -26,3 +26,7 @@ export function lossWorkQuery(data:FormData) {
 export function prisonCollegeQuery(data:FormData) {
   return axios.post(apiUrl + "/prisoncollegequery/", data);
 }
+
+export function vaccDiagQuery(data:FormData) {
+  return axios.post(apiUrl + "/vaccdiagquery/", data);
+}

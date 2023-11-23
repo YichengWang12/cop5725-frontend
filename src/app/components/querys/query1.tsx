@@ -1,4 +1,4 @@
-import {FormControl, InputLabel, MenuItem, Select} from "@mui/material";
+import {Alert, FormControl, InputLabel, MenuItem, Select} from "@mui/material";
 import React, {useEffect} from "react";
 import "./query1.css"
 import Box from "@mui/material/Box";
@@ -79,6 +79,9 @@ export default function Query1(){
     const [dateTags, setDateTags] = React.useState<any[]>([]);
     const [deathRate, setDeathRate] = React.useState<any[]>([]);
     const [crimeRate, setCrimeRate] = React.useState<any[]>([]);
+    const [alertVisible, setAlertVisible] = React.useState(false);
+    const [alertMessage, setAlertMessage] = React.useState('');
+    const [alertType, setAlertType] = React.useState('');
 
     useEffect(() => {
         let day = checkDate(startYear,startMonth, startDay);
@@ -92,6 +95,9 @@ export default function Query1(){
 
     function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
+        setAlertType('success');
+        setAlertMessage('Searching...');
+        setAlertVisible(true);
         const data = new FormData(event.currentTarget);
 
         let startYear = Number(data.get('startYear'));
@@ -120,13 +126,10 @@ export default function Query1(){
         const param = new FormData();
         param.append('startDate', startDate.toISOString().split('T')[0]);
         param.append('endDate', endDate.toISOString().split('T')[0]);
-        console.log({
-            startDate: param.get('startDate'),
-            endDate: param.get('endDate'),
-        });
 
         crimeQuery(param).then((res) => {
             if(res.status == 200){
+                setAlertVisible(false)
                 let dateTags = [];
                 let deathRate = [];
                 let crimeRate = [];
@@ -142,6 +145,9 @@ export default function Query1(){
             }
         }   ).catch((err) => {
             console.log(err);
+            setAlertMessage(err.response.data.error);
+            setAlertType('error');
+            setAlertVisible(true);
         });
 
     }
@@ -289,6 +295,8 @@ export default function Query1(){
             <div className="chart">
                 <QueryChart labels={dateTags} data={{deathRate:deathRate,crimeRate:crimeRate}}/>
             </div>
+            {(alertVisible && alertType=='success') && <Alert className="float-bar" severity={alertType}>{alertMessage}</Alert>}
+            {(alertVisible && alertType=='error') && <Alert className="float-bar" severity={alertType}>{alertMessage}</Alert>}
         </div>
 
 
